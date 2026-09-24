@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------
+   Health / Lifestyle domain theme.
+   `data-domain` is set on <html> by GameContext whenever the toggle
+   flips. --domain-accent is the single variable every component reads,
+   so switching domains recolors the whole app at once. Elements that
+   consume it also carry a `transition-colors duration-300` (or similar)
+   class, which is what makes the swap feel like a fade rather than a
+   snap.
+   --------------------------------------------------------------------- */
+:root {
+  --health-accent: #4ade80;       /* true grass green, not teal/cyan */
+  --health-accent-soft: rgba(74, 222, 128, 0.12);
+  --lifestyle-accent: #a78bfa;    /* lavender-violet */
+  --lifestyle-accent-soft: rgba(167, 139, 250, 0.12);
+  --domain-accent: var(--lifestyle-accent);
+  --domain-accent-soft: var(--lifestyle-accent-soft);
+}
+
+html[data-domain='health'] {
+  --domain-accent: var(--health-accent);
+  --domain-accent-soft: var(--health-accent-soft);
+}
+
+html[data-domain='lifestyle'] {
+  --domain-accent: var(--lifestyle-accent);
+  --domain-accent-soft: var(--lifestyle-accent-soft);
+}
+
+html {
+  transition: background-color 0.4s ease;
+}
+
+body {
+  @apply bg-bg text-white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Subtle page-level wash of the active domain color, so the transition
+   reads even where no single component owns the accent. */
+#root {
+  min-height: 100vh;
+  background: radial-gradient(1200px 600px at 10% -10%, var(--domain-accent-soft), transparent 60%);
+  transition: background 0.5s ease;
+}
+
+/* ---------------------------------------------------------------------
+   Modal open/close
+   --------------------------------------------------------------------- */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.levelup-backdrop {
+  animation: fade-in 0.18s ease-out;
+}
+.levelup-card {
+  animation: pop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------------------------------------------------------------------
+   Achievement badges
+   --------------------------------------------------------------------- */
+@keyframes badge-pop-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.badge-pop {
+  animation: badge-pop-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.badge-locked {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+
+/* Bronze — slow, soft pulse */
+@keyframes glow-bronze {
+  0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+  50% { filter: drop-shadow(0 0 9px currentColor); }
+}
+.badge-glow-bronze {
+  animation: glow-bronze 3.4s ease-in-out infinite;
+}
+
+/* Silver — brighter shimmer with a hold at peak */
+@keyframes glow-silver {
+  0%, 100% { filter: drop-shadow(0 0 3px currentColor); }
+  40% { filter: drop-shadow(0 0 11px currentColor); }
+  60% { filter: drop-shadow(0 0 11px currentColor); }
+}
+.badge-glow-silver {
+  animation: glow-silver 2.4s ease-in-out infinite;
+}
+
+/* Gold — fast, dramatic pulse */
+@keyframes glow-gold {
+  0%, 100% { filter: drop-shadow(0 0 3px currentColor); }
+  50% { filter: drop-shadow(0 0 16px currentColor); }
+}
+.badge-glow-gold {
+  animation: glow-gold 1.7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* ---------------------------------------------------------------------
+   Scrollbar polish (optional, cosmetic)
+   --------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a3142;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+/* Used by the countdown time-wheel pickers on the Timer page — the
+   scroll interaction is the UI, so the native scrollbar is hidden. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
