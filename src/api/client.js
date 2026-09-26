@@ -42,3 +42,9 @@ export const quoteApi = {
 }
 
 export default api
+
+export const wellnessApi = {
+  today: () => api.get('/wellness/today'),
+  saveToday: (patch) => api.put('/wellness/today', patch),
+  history: (days = 14) => api.get('/wellness/history', { params: { days } }),
+}

@@ -1,11 +1,16 @@
+import { useEffect, useState } from 'react'
 import DailyQuoteCard from '../components/DailyQuoteCard.jsx'
 import WeeklyProgress from '../components/WeeklyProgress.jsx'
 import MonthGlance from '../components/MonthGlance.jsx'
+import SparkTrendCard from '../components/SparkTrendCard.jsx'
 import HabitItem from '../components/HabitItem.jsx'
 import LevelUpModal from '../components/LevelUpModal.jsx'
+import DailyWellnessCard from '../components/DailyWellnessCard.jsx'
+import WellnessEntryModal from '../components/WellnessEntryModal.jsx'
 import { HEALTH_CATEGORY_ICONS } from '../game/iconRegistry.js'
 import { useGame } from '../game/GameContext.jsx'
 import { useAuth } from '../auth/AuthContext.jsx'
+import { wellnessApi } from '../api/client.js'
 
 function CategoryCard({ group, toggleHabit, updateHabitTimer, updateHabitNumeric }) {
   const Icon = HEALTH_CATEGORY_ICONS[group.category] || HEALTH_CATEGORY_ICONS.Other
@@ -44,15 +49,57 @@ function CategoryCard({ group, toggleHabit, updateHabitTimer, updateHabitNumeric
 
 // Both domains render this exact same structure — banner, quote, weekly
 // strip, category cards, month calendar — just pointed at whichever
-// domain's habits and accent color are currently active.
+// domain's habits and accent color are currently active. Daily Wellness
+// (numeric sleep/hydration/mood/etc. tracking) is Health-only, since it
+// isn't meaningful for the Lifestyle/quest side.
 export default function Dashboard() {
   const {
-    player, activeDomain, domainCategories, domainHabits, weeklyProgress,
+    player, activeDomain, domainCategories, domainHabits, weeklyProgress, progressTrend,
     toggleHabit, updateHabitTimer, updateHabitNumeric, levelUpEvent, clearLevelUpEvent,
   } = useGame()
   const { user } = useAuth()
 
   const isHealth = activeDomain === 'health'
+  const last7 = progressTrend.slice(7)
+
+  const [wellness, setWellness] = useState(null)
+  const [wellnessLoading, setWellnessLoading] = useState(true)
+  const [showWellnessModal, setShowWellnessModal] = useState(false)
+
+  useEffect(() => {
+    if (!isHealth) return
+    let cancelled = false
+    setWellnessLoading(true)
+    wellnessApi
+      .today()
+      .then((res) => {
+        if (!cancelled) setWellness(res.data)
+      })
+      .catch(() => {
+        if (!cancelled) setWellness(null)
+      })
+      .finally(() => {
+        if (!cancelled) setWellnessLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isHealth])
+
+  async function handleSaveWellness(payload) {
+    try {
+      const res = await wellnessApi.saveToday(payload)
+      setWellness(res.data)
+      setShowWellnessModal(false)
+      return { ok: true }
+    } catch (err) {
+      const detail = err.response?.data?.detail
+      const message = Array.isArray(detail)
+        ? detail.map((d) => d.msg).join(', ')
+        : detail || 'Could not save — check your values and try again.'
+      return { ok: false, error: message }
+    }
+  }
 
   return (
     <div className="max-w-6xl">
@@ -66,6 +113,15 @@ export default function Dashboard() {
       </div>
 
       <DailyQuoteCard />
+
+      {isHealth && (
+        <DailyWellnessCard
+          wellness={wellness || {}}
+          loading={wellnessLoading}
+          onEdit={() => setShowWellnessModal(true)}
+        />
+      )}
+
       <WeeklyProgress weeklyProgress={weeklyProgress} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
@@ -90,8 +146,22 @@ export default function Dashboard() {
           )}
         </div>
 
-        <MonthGlance habits={domainHabits} />
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <SparkTrendCard title="Last 7 days" subtitle="Daily completion" data={last7} />
+            <SparkTrendCard title="Last 14 days" subtitle="Daily completion" data={progressTrend} />
+          </div>
+          <MonthGlance habits={domainHabits} />
+        </div>
       </div>
+
+      {showWellnessModal && (
+        <WellnessEntryModal
+          wellness={wellness || {}}
+          onClose={() => setShowWellnessModal(false)}
+          onSave={handleSaveWellness}
+        />
+      )}
     </div>
   )
 }
