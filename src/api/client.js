@@ -41,10 +41,29 @@ export const quoteApi = {
   today: () => api.get('/quote/today', { timeout: 15_000 }), // may hit Gemini on cache miss
 }
 
-export default api
-
 export const wellnessApi = {
   today: () => api.get('/wellness/today'),
   saveToday: (patch) => api.put('/wellness/today', patch),
   history: (days = 14) => api.get('/wellness/history', { params: { days } }),
 }
+
+export const medicationsApi = {
+  list: () => api.get('/medications'),
+  create: (payload) => api.post('/medications', payload),
+  update: (id, payload) => api.put(`/medications/${id}`, payload),
+  remove: (id) => api.delete(`/medications/${id}`),
+  today: () => api.get('/medications/schedule/today'),
+  logDose: (payload) => api.post('/medications/log', payload),
+  history: (params) => api.get('/medications/history/all', { params }),
+  adherence: (period = 'week') => api.get('/medications/adherence/summary', { params: { period } }),
+}
+
+export const gameApi = {
+  getState: () => api.get('/game/state'),
+  saveState: (state) => api.put('/game/state', { state }),
+}
+
+export const aiApi = {
+  dailyInsight: () => api.get('/ai/daily-insight', { timeout: 15_000 }), // may hit Gemini on cache miss
+}
+export default api

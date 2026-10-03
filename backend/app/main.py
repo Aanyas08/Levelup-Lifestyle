@@ -9,11 +9,15 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+
 from . import models
 from .database import Base, engine
 from .routes_auth import router as auth_router
 from .routes_quote import router as quote_router
 from .routes_wellness import router as wellness_router
+from .routes_medications import router as medications_router
+from .routes_ai import router as ai_router
+from .routes_game import router as game_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("levelup")
@@ -41,6 +45,9 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 app.include_router(auth_router)
 app.include_router(quote_router)
 app.include_router(wellness_router)
+app.include_router(medications_router)
+app.include_router(ai_router)
+app.include_router(game_router)
 
 
 @app.get("/health")

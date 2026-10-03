@@ -47,11 +47,6 @@ function CategoryCard({ group, toggleHabit, updateHabitTimer, updateHabitNumeric
   )
 }
 
-// Both domains render this exact same structure — banner, quote, weekly
-// strip, category cards, month calendar — just pointed at whichever
-// domain's habits and accent color are currently active. Daily Wellness
-// (numeric sleep/hydration/mood/etc. tracking) is Health-only, since it
-// isn't meaningful for the Lifestyle/quest side.
 export default function Dashboard() {
   const {
     player, activeDomain, domainCategories, domainHabits, weeklyProgress, progressTrend,

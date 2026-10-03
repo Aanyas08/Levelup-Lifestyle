@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import Features from './pages/Features.jsx'
 import Habits from './pages/Habits.jsx'
 import TimerPage from './pages/TimerPage.jsx'
+import Medications from './pages/Medications.jsx'
 import Progress from './pages/Progress.jsx'
 import Achievements from './pages/Achievements.jsx'
 import Rewards from './pages/Rewards.jsx'
@@ -25,6 +26,7 @@ function AppShell() {
             <Route path="/features" element={<Features />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/timer" element={<TimerPage />} />
+            <Route path="/medications" element={<Medications />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/rewards" element={<Rewards />} />

@@ -15,6 +15,7 @@ into that day's row, so the frontend can save partial progress (log
 sleep now, hydration after lunch) without needing separate endpoints per
 metric or a full snapshot on every save.
 """
+
 from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query

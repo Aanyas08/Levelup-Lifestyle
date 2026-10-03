@@ -1,55 +1,56 @@
-import { useEffect, useState } from 'react'
-import { Sparkles } from 'lucide-react'
-import { quoteApi } from '../api/client.js'
+import React, { useEffect, useState } from 'react';
 
-/**
- * "AI Daily Insight" card. Calls the backend once per mount; the backend
- * itself caches the Gemini call once per calendar day, so repeated visits
- * (and other users) don't re-trigger generation. Falls back silently to
- * whatever the backend's fallback pool returns if Gemini is unavailable —
- * the card doesn't need to know which mode it's in, it just renders text.
- */
 export default function DailyQuoteCard() {
-  const [quote, setQuote] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [insight, setInsight] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false
-    quoteApi
-      .today()
-      .then((res) => {
-        if (!cancelled) setQuote(res.data)
-      })
-      .catch(() => {
-        if (!cancelled) setError(true)
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    let isMounted = true;
 
-  if (error) return null
+    fetch('/ai/daily-insight', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted) {
+          setInsight(data);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching quote:', err);
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-surface border border-border rounded-2xl p-5 mb-6 animate-pulse h-20" />
+    );
+  }
+
+  if (!insight?.quote) return null;
 
   return (
-    <div className="bg-surface border border-[var(--domain-accent)]/25 rounded-2xl p-5 flex items-start gap-3 mb-6 transition-colors duration-300">
-      <span className="w-9 h-9 rounded-lg bg-[var(--domain-accent)]/15 text-[var(--domain-accent)] flex items-center justify-center shrink-0">
-        <Sparkles size={16} />
-      </span>
-      <div className="min-w-0">
-        <p className="text-xs font-semibold text-[var(--domain-accent)] mb-1">AI Daily Insight</p>
-        {loading ? (
-          <div className="h-4 w-2/3 bg-surface-light rounded animate-pulse" />
-        ) : (
-          <p className="text-sm text-gray-200 leading-relaxed">
-            "{quote?.text}"
-            {quote?.author && <span className="text-gray-500"> — {quote.author}</span>}
-          </p>
+    <div className="bg-surface border border-border rounded-2xl p-5 mb-6">
+      <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-[var(--domain-accent)]">
+        <span>✨ Daily Quote</span>
+        {insight.source === 'gemini' && (
+          <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-800">
+            Gemini AI
+          </span>
         )}
       </div>
+      <p className="text-base italic font-medium text-gray-200">
+        "{insight.quote}"
+      </p>
     </div>
-  )
+  );
 }

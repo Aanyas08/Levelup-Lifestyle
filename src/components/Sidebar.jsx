@@ -1,11 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, ListChecks, TrendingUp, Award, Gift, User, LogOut, Zap, Timer } from 'lucide-react'
+import { LayoutDashboard, ListChecks, TrendingUp, Award, Gift, User, LogOut, Zap, Timer, Pill } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext.jsx'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/habits', label: 'Habits', icon: ListChecks },
   { to: '/timer', label: 'Timer', icon: Timer },
+  { to: '/medications', label: 'Medications', icon: Pill },
   { to: '/progress', label: 'Progress', icon: TrendingUp },
   { to: '/achievements', label: 'Achievements', icon: Award },
   { to: '/rewards', label: 'Rewards', icon: Gift },
