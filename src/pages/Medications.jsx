@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Pill, Plus, Check, X as XIcon, Pencil, Trash2, Clock } from 'lucide-react'
 import { medicationsApi } from '../api/client.js'
 import MedicationFormModal from '../components/MedicationFormModal.jsx'
+import NotificationPermissionBanner from '../components/NotificationPermissionBanner.jsx'
 
 const STATUS_STYLE = {
   scheduled: 'text-gray-400 bg-surface-light',
@@ -175,6 +176,7 @@ export default function Medications() {
       <p className="text-gray-400 text-sm mb-6">
         Track your medicines and scheduled doses — this doesn't offer medical advice, just reminders and records.
       </p>
+      <NotificationPermissionBanner />
 
       {error && (
         <div className="text-xs text-orange-300 bg-orange-400/10 border border-orange-400/20 rounded-lg px-3 py-2 mb-4">

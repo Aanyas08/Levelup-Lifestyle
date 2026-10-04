@@ -1,16 +1,18 @@
 import { Bell, ChevronDown } from 'lucide-react'
 import { useAuth } from '../auth/AuthContext.jsx'
 import DomainToggle from './DomainToggle.jsx'
+import { useLocation } from 'react-router-dom'
 
 export default function Topbar() {
   const { user } = useAuth()
+  const location = useLocation()
   const initial = user?.name?.[0]?.toUpperCase() || '?'
 
   return (
     <header className="flex items-center justify-between border-b border-border px-8 py-4">
-      <DomainToggle />
+      {location.pathname !== '/medications' && <DomainToggle />}
 
-      <div className="flex items-center gap-5">
+      <div className="ml-auto flex items-center gap-5">
         <button aria-label="Notifications" className="text-gray-400 hover:text-white transition-colors">
           <Bell size={19} />
         </button>

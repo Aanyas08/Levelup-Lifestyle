@@ -13,10 +13,14 @@ import Profile from './pages/Profile.jsx'
 import Login from './pages/Login.jsx'
 import Signup from './pages/Signup.jsx'
 import ProtectedRoute from './auth/ProtectedRoute.jsx'
+import MedicationReminderEngine from './components/MedicationReminderEngine.jsx'
+import HydrationCompanion from './components/HydrationCompanion.jsx'
+
 
 function AppShell() {
   return (
     <div className="flex h-screen bg-bg">
+      <MedicationReminderEngine />
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar />
@@ -34,6 +38,7 @@ function AppShell() {
           </Routes>
         </main>
       </div>
+      <HydrationCompanion />
     </div>
   )
 }

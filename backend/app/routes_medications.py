@@ -30,11 +30,12 @@ from .deps import get_current_user
 
 router = APIRouter(prefix="/medications", tags=["medications"])
 
-
-def _parse_time(value: str | time) -> time:
+def _parse_time(value: str | time) -> str:
     if isinstance(value, time):
-        return value
-    return datetime.strptime(value, "%H:%M").time()
+        return value.strftime("%H:%M")
+
+    datetime.strptime(value, "%H:%M")
+    return value
 
 
 
@@ -65,9 +66,9 @@ def _to_out(med: models.Medication) -> schemas.MedicationOut:
         reminder_enabled=med.reminder_enabled,
         notes=med.notes,
         times=sorted(
-            s.time.strftime("%H:%M")
+            s.time
             for s in med.schedules
-        ),
+            ),
         created_at=med.created_at,
         updated_at=med.updated_at,
     )
