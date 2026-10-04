@@ -53,8 +53,8 @@ def _gather_context(db: Session, user: models.User) -> dict:
     week_start = today - timedelta(days=6)
 
     wellness = (
-        db.query(models.Wellness)
-        .filter(models.Wellness.user_id == user.id, models.Wellness.entry_date == today)
+        db.query(models.DailyWellness)
+        .filter(models.DailyWellness.user_id == user.id, models.DailyWellness.entry_date == today)
         .first()
     )
 

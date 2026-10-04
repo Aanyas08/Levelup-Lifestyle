@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { aiApi } from '../api/client.js';
 
 export default function DailyQuoteCard() {
   const [insight, setInsight] = useState(null);
@@ -7,16 +8,11 @@ export default function DailyQuoteCard() {
   useEffect(() => {
     let isMounted = true;
 
-    fetch('/ai/daily-insight', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    aiApi
+      .dailyInsight()
+      .then((res) => {
         if (isMounted) {
-          setInsight(data);
+          setInsight(res.data);
           setLoading(false);
         }
       })

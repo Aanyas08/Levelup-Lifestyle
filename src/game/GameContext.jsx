@@ -1,12 +1,22 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage.js'
+import { useAuth } from '../auth/AuthContext.jsx'
+import { gameApi } from '../api/client.js'
 import { xpForLevel, rankForLevel, DIFFICULTY_REWARDS } from './xpCurve.js'
 import { initialHabits, initialPlayer } from './initialData.js'
 import { todayKey, isScheduledOn, getWeekDates, dateKey, habitExistedOn, addDays, startOfDay } from './dateUtils.js'
 
 const GameContext = createContext(null)
 
+// How long to wait after the last change before pushing state to the
+// backend. Habit updates (ticking a box, nudging a timer) can fire in
+// quick bursts, so this collapses a burst into a single PUT /game/state
+// rather than one request per keystroke/tick.
+const SAVE_DEBOUNCE_MS = 1200
+
 export function GameProvider({ children }) {
+  const { isAuthenticated, checkingSession } = useAuth()
+
   const [player, setPlayer] = useLocalStorage('levelup:player', initialPlayer)
   const [habits, setHabits] = useLocalStorage('levelup:habits', initialHabits)
   // 'health' | 'lifestyle' — which side of the app is currently active.
@@ -15,6 +25,72 @@ export function GameProvider({ children }) {
   // Transient — not persisted. Holds level-up info while the celebration
   // modal is showing, then gets cleared.
   const [levelUpEvent, setLevelUpEvent] = useState(null)
+
+  // Whether we've finished pulling this account's saved state from the
+  // backend yet. Gates autosave below — without this, the very first
+  // render (still holding whatever was last in localStorage, possibly
+  // from a different account on a shared browser) would immediately get
+  // pushed to the server and clobber that account's real saved state
+  // before the fetch below even has a chance to run.
+  const hasLoadedRemoteRef = useRef(false)
+
+  // Pull this account's saved game state on login, and reset the gate
+  // on logout so the next login re-fetches instead of reusing stale data.
+  useEffect(() => {
+    if (checkingSession) return
+
+    if (!isAuthenticated) {
+      hasLoadedRemoteRef.current = false
+      return
+    }
+
+    let cancelled = false
+    gameApi
+      .getState()
+      .then((res) => {
+        if (cancelled) return
+        const remote = res.data?.state
+        if (remote) {
+          if (remote.player) setPlayer(remote.player)
+          if (remote.habits) setHabits(remote.habits)
+          if (remote.activeDomain) setActiveDomain(remote.activeDomain)
+        }
+        // No remote state yet (brand-new account) still counts as
+        // "loaded" — it just means autosave starts from whatever's
+        // currently in local state instead of overwriting it.
+        hasLoadedRemoteRef.current = true
+      })
+      .catch(() => {
+        // Couldn't reach the backend — don't block the app on it, but
+        // also don't start autosaving over a state we never actually
+        // confirmed is this account's, so a transient network error
+        // can't silently push stale/wrong data to the server once it's
+        // back.
+        hasLoadedRemoteRef.current = false
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isAuthenticated, checkingSession, setPlayer, setHabits, setActiveDomain])
+
+  // Push changes to the backend, debounced, once the initial load above
+  // has completed. This is what makes progress durable per-account
+  // instead of living only in this browser's localStorage.
+  useEffect(() => {
+    if (!isAuthenticated || !hasLoadedRemoteRef.current) return
+
+    const timeout = setTimeout(() => {
+      gameApi.saveState({ player, habits, activeDomain }).catch(() => {
+        // Best-effort — a failed save here isn't shown to the user since
+        // it would fire constantly on flaky connections; local state and
+        // localStorage remain the source of truth for the current
+        // session regardless, so nothing is lost, just not yet synced.
+      })
+    }, SAVE_DEBOUNCE_MS)
+
+    return () => clearTimeout(timeout)
+  }, [player, habits, activeDomain, isAuthenticated])
 
   // Reflect the active domain on <html> so index.css can theme the whole
   // app (accent color, soft backgrounds) with a CSS transition.

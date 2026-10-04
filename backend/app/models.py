@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, Date, Float, ForeignKey, UniqueConstraint, Text
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, Date, Time, Float, ForeignKey, UniqueConstraint, Text
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -173,7 +173,7 @@ class MedicationSchedule(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     medication_id = Column(Integer, ForeignKey("medications.id"), nullable=False, index=True)
-    time = Column(String, nullable=False)  # "HH:MM", 24-hour — stored as text to avoid timezone edge cases
+    time = Column(Time, nullable=False)  # naive time-of-day (no tz) — SQLAlchemy stores this as "HH:MM:SS" text on SQLite
 
     medication = relationship("Medication", back_populates="schedules")
 
@@ -198,7 +198,7 @@ class MedicationLog(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     scheduled_date = Column(Date, nullable=False, index=True)
-    scheduled_time = Column(String, nullable=False)  # "HH:MM", matches a MedicationSchedule.time
+    scheduled_time = Column(Time, nullable=False)  # naive time-of-day, matches MedicationSchedule.time's type
     status = Column(String, nullable=False)  # taken | missed | skipped
     taken_at = Column(DateTime, nullable=True)  # only set when status == "taken"
 
