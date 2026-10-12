@@ -4,6 +4,12 @@
 
 The project combines habit tracking, health management, gamification, and personalized AI-generated insights to encourage healthier routines and consistent self-improvement.
 
+## 🚀 Live Deployment
+
+- 🌐 **Frontend (Vercel):** [https://levelup-lifestyle.vercel.app/](https://levelup-lifestyle.vercel.app/)
+- ⚙️  **Backend:** Deployed on Render
+- 📘 **API Documentation (Swagger UI):** [https://levelup-lifestyle.onrender.com/docs](https://levelup-lifestyle.onrender.com/docs)
+
 ## ✨ Key Features
 
 ### 1. Lifestyle & Habit Management
