@@ -1,329 +1,231 @@
-# LevelUp — Health & Lifestyle Management System
+# LevelUp — Lifestyle & Health Management System
 
-LevelUp is a **Health & Lifestyle Management System designed for college students**. It combines habit building, health tracking, productivity, and gamification into one platform.
+**LevelUp** is an AI-powered Lifestyle and Health Management System designed to help college students and young adults manage their daily habits, productivity, wellness, and medications through a unified platform.
 
-The project consists of a **React + Vite frontend** and a **FastAPI backend**.
+The project combines habit tracking, health management, gamification, and personalized AI-generated insights to encourage healthier routines and consistent self-improvement.
 
----
+## ✨ Key Features
+
+### 1. Lifestyle & Habit Management
+- Create and manage personal habits and daily tasks.
+- Track habit completion and progress.
+- Support different habit types and schedules.
+- Monitor consistency and streaks.
+
+### 2. Health & Wellness Tracking
+- Track daily wellness activities and health-related information.
+- Monitor lifestyle routines and personal progress.
+- Organize wellness activities in one place.
+
+### 3. Medication Management
+- Add and manage medicines.
+- Set dosage details and medication schedules.
+- View today's medication schedule.
+- Record medication status, including taken or missed doses.
+- View medication history and adherence information.
+
+### 4. AI-Powered Insights
+- Generate personalized daily insights and motivational content.
+- Provide wellness and hydration suggestions based on available user information.
+- Support habit-building through personalized recommendations.
+
+*AI-generated guidance is intended for general wellness support and is not a substitute for professional medical advice.*
+
+### 5. Gamification & Rewards
+- Encourage consistency through progress tracking.
+- Integrate habits with gamified progression.
+- Motivate users through rewards, achievements, and streaks.
+
+### 6. Dashboard & Progress Tracking
+- Access important information from a central dashboard.
+- View relevant habit, wellness, and medication information.
+- Monitor progress and daily activities.
 
 ## 🛠️ Tech Stack
 
-### Frontend
+| Component | Technology |
+|---|---|
+| Frontend | React.js, Vite |
+| Styling | Tailwind CSS, CSS |
+| Backend | Python, FastAPI |
+| Database | SQLite |
+| ORM | SQLAlchemy |
+| Authentication | JWT |
+| AI Integration | Google Gemini API |
+| Version Control | Git and GitHub |
 
-* React.js
-* Vite
-* Tailwind CSS
-* JavaScript
-* Axios
+## 📁 Project Structure
 
-### Backend
+```text
+project/
+├── backend/
+│   └── app/
+│       ├── main.py
+│       ├── models.py
+│       ├── schemas.py
+│       ├── security.py
+│       ├── routes_medications.py
+│       ├── routes_wellness.py
+│       └── services/
+├── src/
+│   ├── api/
+│   │   └── client.js
+│   ├── components/
+│   ├── pages/
+│   ├── App.jsx
+│   └── index.css
+├── index.html
+├── package.json
+├── requirements.txt
+├── .env.example
+└── README.md
+```
 
-* Python
-* FastAPI
-* SQLAlchemy
-* SQLite
-* JWT Authentication
-* Pydantic
+*The exact files and folders may vary depending on the latest version of the repository.*
 
----
+## 🚀 Getting Started
 
-# 🚀 Getting Started
+Follow these steps to run LevelUp on your local machine.
 
-Follow the steps below to run the project locally.
+### Prerequisites
 
-## 1. Clone the Repository
+Install the following before starting:
+
+- [Node.js](https://nodejs.org/) and npm
+- [Python](https://www.python.org/) (a version compatible with the project's dependencies)
+- [Git](https://git-scm.com/)
+- A code editor such as Visual Studio Code
+
+### Step 1: Clone the Repository
 
 Open a terminal and run:
 
 ```bash
 git clone https://github.com/Aanyas08/Levelup-updated.git
-```
-
-Then move into the project folder:
-
-```bash
 cd Levelup-updated
 ```
 
----
+Navigate into the folder containing `package.json` and the backend directory if the repository has an additional nested project folder.
 
-# 2. Frontend Setup
+### Step 2: Set Up the Backend
 
-Open a terminal in the project root.
+Open a terminal in the backend folder containing `requirements.txt` or the backend's Python dependency file.
 
-Install the frontend dependencies:
+Create a virtual environment:
 
-```bash
-npm install
-```
-
-After installation, start the frontend:
-
-```bash
-npm run dev
-```
-
-The frontend will normally run at:
-
-```text
-http://localhost:5173
-```
-
-Keep this terminal running.
-
----
-
-# 3. Backend Setup
-
-Open a **new terminal**.
-
-Move into the backend folder:
-
-```bash
-cd backend
-```
-
-## Create a Python Virtual Environment
-
-Windows:
-
+**Windows**
 ```bash
 python -m venv venv
-```
-
-Activate it:
-
-```bash
 venv\Scripts\activate
 ```
 
-If activation is successful, you should see `(venv)` in your terminal.
+**macOS/Linux**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
----
-
-## 4. Install Backend Dependencies
-
-With the virtual environment activated, run:
+Install the dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+### Step 3: Configure Environment Variables
 
-# 5. Configure Environment Variables
+Create a `.env` file in the location expected by the backend configuration.
 
-The actual `.env` file is **not included in GitHub** for security reasons.
-
-Inside the `backend` folder, create a new file named:
-
-```text
-.env
-```
-
-You can use `.env.example` as a reference.
-
-Example:
+Add the required variables using the project's configuration:
 
 ```env
-DATABASE_URL=sqlite:///./levelup.db
-SECRET_KEY=your-secret-key
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+SECRET_KEY=your_secret_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-### Important
+Replace the placeholder values with your own secrets. If the application does not use AI locally, configure the Gemini key only if required by the current implementation.
 
-Do **not** commit your `.env` file to GitHub.
+**Important:** Never commit your `.env` file, API keys, passwords, or other secrets to GitHub.
 
-The `.gitignore` file already prevents it from being uploaded.
+### Step 4: Start the Backend
 
----
-
-# 6. Start the Backend
-
-Make sure you are inside the `backend` folder and your virtual environment is activated.
-
-Run:
+From the directory where the FastAPI application is configured, activate the virtual environment and run:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-The backend will normally run at:
+If your project uses a different Python package path, adjust the command to match the location of `main.py`.
+
+The backend will typically be available at:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-FastAPI's interactive API documentation will be available at:
+FastAPI interactive API documentation:
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-Keep this terminal running.
+### Step 5: Set Up the Frontend
 
----
+Open a **new terminal** in the frontend directory containing `package.json`.
 
-# 📁 Project Structure
+Install dependencies:
 
-```text
-Levelup-updated/
-│
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── database.py
-│   │   ├── models.py
-│   │   ├── schemas.py
-│   │   ├── security.py
-│   │   ├── deps.py
-│   │   ├── routes_auth.py
-│   │   └── routes_quote.py
-│   │
-│   ├── requirements.txt
-│   └── .env.example
-│
-├── src/
-│   ├── api/
-│   ├── auth/
-│   ├── components/
-│   ├── game/
-│   ├── hooks/
-│   └── pages/
-│
-├── index.html
-├── package.json
-├── package-lock.json
-├── tailwind.config.js
-├── postcss.config.js
-├── vite.config.js
-└── .gitignore
+```bash
+npm install
 ```
 
----
-
-# ▶️ Running the Complete Project
-
-You need **two terminals** running at the same time.
-
-### Terminal 1 — Frontend
-
-From the project root:
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-### Terminal 2 — Backend
-
-From the project root:
-
-```bash
-cd backend
-venv\Scripts\activate
-uvicorn app.main:app --reload
-```
-
-Then open:
+Open the local URL displayed in the terminal, typically:
 
 ```text
 http://localhost:5173
 ```
 
----
+Keep both the frontend and backend terminals running while using the application.
 
-# 🔄 Updating the Project
+## 🔐 Authentication & Data
 
-If your collaborator makes changes and wants to get the latest version:
+- The application uses JWT-based authentication.
+- User-specific data is managed through the backend and database.
+- Local development requires the appropriate environment variables.
+- Do not share production credentials or private API keys.
 
-```bash
-git pull
-```
+## 🤖 AI Integration
 
-If you make changes and want to upload them:
+LevelUp aims to use AI to make lifestyle management more personalized by using available information such as habits, wellness activity, and medication schedules to provide relevant insights.
 
-```bash
-git add .
-git commit -m "Describe your changes"
-git push
-```
+AI-generated suggestions should remain general and supportive. Users should follow the instructions of qualified healthcare professionals for medication decisions or medical concerns.
 
-Your collaborator can then run:
+## 🔮 Future Enhancements
 
-```bash
-git pull
-```
+Potential extensions include:
 
-to receive the latest changes.
+- More advanced behavioral pattern analysis.
+- Adaptive goals and personalized routines.
+- Expanded health analytics and monthly reports.
+- Improved notification support.
+- Optional computer-vision-based activity verification.
+- Additional nutrition and mental wellness features.
 
----
+## 🎓 Project Objective
 
-# 👥 Collaboration Workflow
+The objective of LevelUp is to bring lifestyle management, productivity, wellness tracking, medication management, and personalized guidance together in one platform.
 
-Before starting work:
+Rather than focusing only on habit formation, LevelUp aims to support a more integrated approach to daily life and health management for students and young adults.
 
-```bash
-git pull
-```
+## 👥 Contributors
 
-After making changes:
+Developed as a team academic project.
 
-```bash
-git add .
-git commit -m "Describe your changes"
-git push
-```
+## 📄 License
 
-### Recommended Commit Messages
-
-Examples:
-
-```text
-Added medication tracking
-Fixed login authentication
-Updated dashboard UI
-Added health statistics
-Fixed API connection
-Updated habit tracking
-```
-
----
-
-# ⚠️ Important Notes
-
-### Do not upload:
-
-```text
-.env
-*.db
-node_modules/
-venv/
-__pycache__/
-```
-
-These files are already included in `.gitignore`.
-
-### Before starting the project
-
-Make sure you have installed:
-
-* Node.js
-* npm
-* Python
-* Git
-
----
-
-# 📌 Repository
-
-GitHub Repository:
-
-https://github.com/Aanyas08/Levelup-updated
-
----
-
-## 👩‍💻 Team
-
-LevelUp is developed as a college project focused on combining **health management, lifestyle improvement, productivity, and gamification for students**.
+This project is intended for academic and educational purposes. Add a specific open-source license if you decide to distribute it under one.
