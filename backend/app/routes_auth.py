@@ -45,18 +45,3 @@ def me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
 
-@router.get("/diagnostic-account")
-def diagnostic_account(db: Session = Depends(get_db)):
-    email = "aanya08@gmail.com"
-
-    user = (
-        db.query(models.User)
-        .filter(models.User.email == email)
-        .first()
-    )
-
-    return {
-        "account_exists": user is not None,
-        "account_id": user.id if user else None,
-        "database_check": "completed",
-    }
