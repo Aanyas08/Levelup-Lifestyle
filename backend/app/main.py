@@ -25,6 +25,12 @@ logger = logging.getLogger("levelup")
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="LevelUp API")
+@app.get("/")
+def root():
+    return {
+        "message": "LevelUp API is running",
+        "docs": "/docs"
+    }
 
 cors_origins = os.environ.get("CORS_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(
