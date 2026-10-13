@@ -30,12 +30,23 @@ from .deps import get_current_user
 
 router = APIRouter(prefix="/medications", tags=["medications"])
 
-def _parse_time(value: str | time) -> str:
-    if isinstance(value, time):
-        return value.strftime("%H:%M")
+def _parse_time(value: str | time) -> time:
+    """Validate a 24-hour HH:MM value and return a Python time object.
 
-    datetime.strptime(value, "%H:%M")
-    return value
+    SQLAlchemy's SQLite Time columns require datetime.time instances, not
+    strings such as "13:20". Returning a time object also keeps schedule
+    comparisons and medication-log lookups consistent.
+    """
+    if isinstance(value, time):
+        return value.replace(second=0, microsecond=0)
+
+    try:
+        return datetime.strptime(value, "%H:%M").time()
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=422,
+            detail="Invalid time format. Use 24-hour HH:MM format, for example 13:20.",
+        )
 
 
 
@@ -66,9 +77,9 @@ def _to_out(med: models.Medication) -> schemas.MedicationOut:
         reminder_enabled=med.reminder_enabled,
         notes=med.notes,
         times=sorted(
-            s.time
+            s.time.strftime("%H:%M") if isinstance(s.time, time) else str(s.time)
             for s in med.schedules
-            ),
+        ),
         created_at=med.created_at,
         updated_at=med.updated_at,
     )
@@ -145,9 +156,9 @@ def create_medication(
         notes=payload.notes,
     )
     med.schedules = [
-    models.MedicationSchedule(time=_parse_time(t))
-    for t in payload.times
-]
+        models.MedicationSchedule(time=_parse_time(t))
+        for t in payload.times
+    ]
     db.add(med)
     db.commit()
     db.refresh(med)
@@ -202,9 +213,9 @@ def update_medication(
     for s in list(med.schedules):
         db.delete(s)
     med.schedules = [
-    models.MedicationSchedule(time=_parse_time(t))
-    for t in payload.times
-]
+        models.MedicationSchedule(time=_parse_time(t))
+        for t in payload.times
+    ]
 
     db.commit()
     db.refresh(med)
